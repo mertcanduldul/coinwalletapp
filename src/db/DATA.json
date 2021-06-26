@@ -1,0 +1,62 @@
+[
+    {
+        "id": 0,
+        "name": "DOGECOIN",
+        "price": "0.54",
+        "time": "15:36:12",
+        "coinPercent": "+11 (+1,05 %)",
+        "marketcoin": false,
+        "coinHoldingCount": "500",
+        "coinHoldingPercent": "100"
+    },
+    {
+        "id": 1,
+        "name": "CHIZ",
+        "price": "2.54",
+        "time": "15:36:12",
+        "coinPercent": "+22 (+0,05 %)",
+        "marketcoin": false,
+        "coinHoldingCount": "450",
+        "coinHoldingPercent": "188"
+    },
+    {
+        "id": 2,
+        "name": "XRP",
+        "price": "7.86",
+        "time": "15:36:12",
+        "coinPercent": "+33 (+56,05 %)",
+        "marketcoin": false,
+        "coinHoldingCount": "500",
+        "coinHoldingPercent": "100"
+    },
+    {
+        "id": 3,
+        "name": "BITCOIN",
+        "price": "2750.54",
+        "time": "15:36:12",
+        "coinPercent": "+44 (+1,05 %)",
+        "marketcoin": false,
+        "coinHoldingCount": "500",
+        "coinHoldingPercent": "100"
+    },
+    {
+        "id": 4,
+        "name": "STELAR",
+        "price": "2750.54",
+        "time": "15:36:12",
+        "coinPercent": "+55 (+1,05 %)",
+        "marketcoin": false,
+        "coinHoldingCount": "500",
+        "coinHoldingPercent": "100"
+    },
+    {
+        "id": 5,
+        "name": "ETHEREUM",
+        "price": "2750.54",
+        "time": "15:36:12",
+        "coinPercent": "+66 (+1,05 %)",
+        "marketcoin": false,
+        "coinHoldingCount": "500",
+        "coinHoldingPercent": "100"
+    }
+]
