@@ -14,15 +14,16 @@ class FavoriteHeader extends Component {
                         <Text style={styles.headerText}>MY FAVORITE COIN</Text>
                     </View>
                 </View>
+                <View style={{ position: 'absolute' }}>
+                    <Shape style={styles.greenLineBox} />
+                </View>
                 <LinearGradient colors={['rgba(46, 32, 219, 1)', 'rgba(228, 50, 193, 0.7)']} style={styles.headerContainer} >
                     <Text style={styles.summaryText}>SUMMARY</Text>
                     <Text style={styles.totalCoin}>15620 USD</Text>
                     <Text style={styles.lastDayText}>24H</Text>
                     <Text style={styles.earnMoneyText}>1200 USD</Text>
                 </LinearGradient>
-                <View style={{ position: 'absolute' }}>
-                    <Shape style={styles.greenLineBox} />
-                </View>
+                
             </View>
         )
     }
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
         justifyContent:'flex-start'
     },
     headerTextBox: {
-        width: 250,
+        width: '100%',
         height: 26,
         top: 40,
         left: 0,

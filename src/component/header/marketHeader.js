@@ -63,11 +63,12 @@ const styles = StyleSheet.create({
         transform: [{ skewY: '3deg' }]
     },
     headerBox: {
-        width: 168,
+        width: '100%',
         height: 28,
         marginTop: 46,
         marginLeft: 52,
         flexDirection: 'row',
+        justifyContent:'space-around'
 
     },
     headerBoxName: {
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
     iconBox: {
         width: 24,
         height: 24,
-        left: 200,
     }
 })
 

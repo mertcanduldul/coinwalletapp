@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View ,SafeAreaView} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 
 import Detail from './detail'

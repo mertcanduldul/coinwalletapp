@@ -6,7 +6,7 @@ import { Shape } from '../icon/index'
 class NewsHeader extends Component {
     render() {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 100 }}>
+            <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', height: 100 }}>
                 <View style={{ position: 'absolute', zIndex: -1, top: -110, left: 0 }}>
                     <Shape />
                 </View>
