@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
         bottom: 5,
         left: 20,
         width: 50,
+        height:50,
         justifyContent: 'center',
         alignItems: 'center'
     },

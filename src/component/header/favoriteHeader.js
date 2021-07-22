@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     headerBox: {
-        top: 0,
+        top: 10,
         height: 188,
         width: '100%',
         alignItems: 'center',
