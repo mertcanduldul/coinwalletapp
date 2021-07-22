@@ -49,7 +49,7 @@ class ChartComponent extends Component {
                         marginVertical: 8,
                         borderRadius: 16
                     }} />
-                <View style={styles.greenBox} />
+                
             </View>
         )
     }
@@ -60,14 +60,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    greenBox: {
-        width: 600,
-        height: 150,
-        backgroundColor: '#0CF2B4',
-        zIndex: -1,
-        position: 'absolute',
-        transform: [{ skewY: '220deg' }],
-    },
+    
 })
 
 export default ChartComponent

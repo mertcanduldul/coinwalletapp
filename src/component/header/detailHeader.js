@@ -11,6 +11,7 @@ class DetailHeader extends Component {
 
         return (
             <View>
+                <View style={styles.greenBox} />
                 <View style={styles.headerBoxRow}>
                     <TouchableOpacity style={styles.backarrow} onPress={() => goBack()}>
                         <Backarrow color="#000" />
@@ -34,6 +35,14 @@ class DetailHeader extends Component {
     }
 }
 const styles = StyleSheet.create({
+    greenBox: {
+        width: 600,
+        height: 150,
+        right:50,
+        backgroundColor: '#0CF2B4',
+        position: 'absolute',
+        transform: [{ skewY: '210deg' }],
+    },
     headerBoxRow: {
         width: '100%',
         height: 41,
