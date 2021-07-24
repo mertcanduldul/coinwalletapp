@@ -51,7 +51,7 @@ class CryptoCoin extends Component {
                                     name: name,
                                     price: price,
                                     time: time,
-                                    coinPercent:coinPercent,
+                                    coinPercent: coinPercent,
                                     marketcoin: false
                                 }
                                 if (item !== null) {
@@ -59,7 +59,6 @@ class CryptoCoin extends Component {
                                 }
                             }
                             }>
-
                             <Star color="#ff9c00" />
                         </TouchableOpacity>
                     </View>

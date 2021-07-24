@@ -11,13 +11,12 @@ class CoinList extends React.Component {
         this.state = {
             data: [],
             loading: true,
-            isRefresh: false,
+            isRefresh: false, 
 
         }
     }
-
     componentDidMount() {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 30; i++) {
             AsyncStorage.getItem(i + "").then((res) => {
                 if (res !== null) {
                     let obj = JSON.parse(res)
@@ -33,7 +32,7 @@ class CoinList extends React.Component {
             this.state.data.pop()
         }
         this.setState({ isRefresh: false })
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 30; i++) {
             AsyncStorage.getItem(i + "").then((res) => {
                 if (res !== null) {
                     let obj = JSON.parse(res)
@@ -49,7 +48,6 @@ class CoinList extends React.Component {
         const { isRefresh, data, loading } = this.state
 
         const onLoadData = () => {
-
             const arr = []
             data.forEach(element => {
                 if (arr.indexOf(element) == -1) {
@@ -72,6 +70,7 @@ class CoinList extends React.Component {
                 onPress={() => {
                     navigation.navigate('Detail',
                         {
+                            id:item.id,
                             name: item.name,
                             price: item.price,
                             time: item.time,

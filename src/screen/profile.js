@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, SafeAreaView } from 'react-native'
+import { Text, View, SafeAreaView,Linking } from 'react-native'
 
 import { Shape } from '../component/icon/index'
 
@@ -13,10 +13,10 @@ export class Profile extends Component {
                     </View>
                     <Text style={{ fontFamily: 'Raleway', fontSize: 22 }}>PROFİLE</Text>
                 </View>
-                <View style={{justifyContent:'center',alignItems:'center',top:50}}>
-                    <Text style={{fontSize:22,height:50,fontFamily:'Raleway',}}>UYGULAMAYI HAZIRLAYAN</Text>
-                    <Text style={{fontFamily:'Raleway',fontSize:20}}>MERT CAN DÜLDÜL</Text>
-                    <Text style={{top:20,fontSize:18,fontFamily:'Raleway'}}>Instagram : m.duldul</Text>
+                <View style={{ justifyContent: 'center', alignItems: 'center', top: 50 }}>
+                    <Text style={{ fontSize: 22, height: 50, fontFamily: 'Raleway', }}>UYGULAMAYI HAZIRLAYAN</Text>
+                    <Text style={{ fontFamily: 'Raleway', fontSize: 20 }}>MERT CAN DÜLDÜL</Text>
+                    <Text style={{ top: 20, fontSize: 18, fontFamily: 'Raleway' }} onPress={() => Linking.openURL('http://instagram.com/mduldul')}>Instagram : m.duldul</Text>
                 </View>
             </SafeAreaView>
         )

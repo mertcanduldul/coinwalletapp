@@ -1,12 +1,43 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Shape, Down, List } from '../../component/icon/index'
+import DATA from '../../db/favDATA.json'
+import { array } from 'yargs';
 
 class FavoriteHeader extends Component {
+    constructor() {
+        super()
+        this.state = {
+            data: [],
+            priceSum: 0,
+            pricePercent: 0
+
+        }
+    }
+
+    componentDidMount() {
+        let tempPrice = 0
+        let tempPercent = 0
+        for (let i = 0; i < 30; i++) {
+            AsyncStorage.getItem(i + "").then((res) => {
+                if (res !== null) {
+                    let obj = JSON.parse(res)
+                    tempPercent += parseFloat(obj.coinPercent.substring(1, 3))
+                    tempPrice += parseFloat(obj.price)
+                    this.setState({ priceSum: tempPrice })
+                    this.setState({ pricePercent: tempPercent })
+
+                }
+            })
+
+        }
+    }
     render() {
+
         return (
             <View style={styles.headerBox}>
                 <View>
@@ -19,11 +50,10 @@ class FavoriteHeader extends Component {
                 </View>
                 <LinearGradient colors={['rgba(46, 32, 219, 1)', 'rgba(228, 50, 193, 0.7)']} style={styles.headerContainer} >
                     <Text style={styles.summaryText}>SUMMARY</Text>
-                    <Text style={styles.totalCoin}>15620 USD</Text>
-                    <Text style={styles.lastDayText}>24H</Text>
-                    <Text style={styles.earnMoneyText}>1200 USD</Text>
+                    <Text style={styles.totalCoin}>{this.state.priceSum} USD</Text>
+                    <Text style={styles.lastDayText}>24 Hour</Text>
+                    <Text style={styles.earnMoneyText}>+{this.state.pricePercent}%</Text>
                 </LinearGradient>
-                
             </View>
         )
     }
@@ -47,8 +77,8 @@ const styles = StyleSheet.create({
     },
     lastDayText: {
         position: 'absolute',
-        right: 78,
-        top: 34,
+        right: 40,
+        top: 30,
         fontSize: 12,
         color: '#fff'
     },
@@ -77,7 +107,7 @@ const styles = StyleSheet.create({
         height: 188,
         width: '100%',
         alignItems: 'center',
-        justifyContent:'flex-start'
+        justifyContent: 'flex-start'
     },
     headerTextBox: {
         width: '100%',

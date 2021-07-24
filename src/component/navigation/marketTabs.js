@@ -13,13 +13,11 @@ export class Tabs extends Component {
                     style: { backgroundColor: '#F8F8F8', borderTopLeftRadius: 25 },
                     scrollEnabled: true,
                     activeTintColor: '#fff', inactiveTintColor: '#000',
-                    indicatorStyle: { backgroundColor: '#F21CC8', borderRadius: 20, marginBottom: 8, height: 30, width: 100, marginLeft: 10 },
-                    tabStyle: { width: 120 }
+                    indicatorStyle: { backgroundColor: '#F21CC8', borderRadius: 20, marginBottom: 8, height: 30, width: 175, marginLeft: 10 },
+                    tabStyle: { width: 200 }
                 }}>
                 <Tab.Screen name="Crypto Coin" component={CryptoCoin} />
                 <Tab.Screen name="Emtia" component={Emtia} />
-                <Tab.Screen name="Exchange" component={Emtia} />
-                <Tab.Screen name="Index" component={Emtia} />
             </Tab.Navigator>
         )
     }
