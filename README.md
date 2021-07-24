@@ -22,7 +22,7 @@ npx react-native run-android
 You should Go to root folder 
 ```
 yarn install
-cd pods install && cd .. && yarn react-native run-ios
+cd ios && pod install && cd .. && yarn react-native run-ios
 ```
 
 ## Contributing
