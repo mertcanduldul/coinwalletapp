@@ -44,17 +44,16 @@ const tabstyles = StyleSheet.create({
     },
     buyCoinTab: {
         width: '100%',
-        height: 240,
+        height: 230,
         backgroundColor: '#ffffff',
-
+        justifyContent:'center',
+        alignItems:'center'
     },
     coinName: {
-        top: 15,
         width: 249,
         height: 140,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        left: 100,
     },
     coinNameText: {
         fontSize: 20,

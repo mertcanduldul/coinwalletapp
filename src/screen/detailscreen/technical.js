@@ -24,7 +24,7 @@ export default class technical extends Component {
                 <ProgressChart
                     withCustomBarColorFromData={true}
                     data={data}
-                    width={420}
+                    width={360}
                     height={220}
                     strokeWidth={8}
                     radius={16}

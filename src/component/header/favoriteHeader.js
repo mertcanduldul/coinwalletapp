@@ -5,8 +5,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Shape, Down, List } from '../../component/icon/index'
-import DATA from '../../db/favDATA.json'
-import { array } from 'yargs';
 
 class FavoriteHeader extends Component {
     constructor() {
@@ -33,11 +31,10 @@ class FavoriteHeader extends Component {
 
                 }
             })
-
+            
         }
     }
     render() {
-
         return (
             <View style={styles.headerBox}>
                 <View>

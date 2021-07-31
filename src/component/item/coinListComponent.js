@@ -4,17 +4,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Down, List } from '../../component/icon/index'
 import CoinComponent from '../item/coinComponent'
+import FavoriteHeader from '../header/favoriteHeader';
 
 class CoinList extends React.Component {
     constructor() {
         super()
+        this.callback
         this.state = {
             data: [],
             loading: true,
-            isRefresh: false, 
+            isRefresh: false,
 
         }
     }
+
     componentDidMount() {
         for (let i = 0; i < 30; i++) {
             AsyncStorage.getItem(i + "").then((res) => {
@@ -22,7 +25,6 @@ class CoinList extends React.Component {
                     let obj = JSON.parse(res)
                     this.setState({ data: [...this.state.data, obj] })
                 }
-
             })
         }
     }
@@ -38,7 +40,6 @@ class CoinList extends React.Component {
                     let obj = JSON.parse(res)
                     this.setState({ data: [...this.state.data, obj] })
                 }
-
             })
         }
     }
@@ -70,7 +71,7 @@ class CoinList extends React.Component {
                 onPress={() => {
                     navigation.navigate('Detail',
                         {
-                            id:item.id,
+                            id: item.id,
                             name: item.name,
                             price: item.price,
                             time: item.time,
