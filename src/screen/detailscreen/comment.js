@@ -1,62 +1,85 @@
 import React, { Component } from 'react'
-import { TouchableOpacity } from 'react-native'
-import { Text, View, StyleSheet, TextInput } from 'react-native'
+import { Text, View, StyleSheet, TextInput, FlatList, TouchableOpacity, RefreshControl } from 'react-native'
 
-import { Down, Octagonal, Shape, User } from '../../component/icon/index'
+import { Down, User } from '../../component/icon/index'
 
 class comment extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            commentText: ""
+        }
+    }
     render() {
+        const DATA = [
+            {
+                "id": "0",
+                "name": "Martin Luther JR.",
+                "time": "1 Minutes Ago",
+                "text": "I have a dream that one day every valley shall be engulfed, every hill shall be exalted and every mountain shall be made low,the rough places will be made plains"
+            },
+            {
+                "id": "1",
+                "name": "Martin Luther JR.",
+                "time": "1 Minutes Ago",
+                "text": "I have a dream that one day every valley shall be engulfed, every hill shall be exalted and every mountain shall be made low,the rough places will be made plains"
+            },
+        ]
+        const Comment = ({ name, time, text }) => {
+            return (
+                <View style={styleMsg.row}>
+                    <View style={styleMsg.headerText}>
+                        <Text style={styleMsg.userNameText}>{name}</Text>
+                        <Text style={styleMsg.time}>{time}</Text>
+                    </View>
+                    <View>
+                        <Text style={styleMsg.msg}>{text}</Text>
+                    </View>
+                </View>
+            )
+        }
+        const renderItem = ({ item }) => (
+            <Comment name={item.name} time={item.time} text={item.text} />
+        );
+        const changeText = (text) => {
+            this.setState({ commentText: text })
+        }
+        const addComment = () => {
+
+            let value = this.state.commentText
+            let name = "Donald Trump"
+            let id = parseInt(DATA.length)
+            let obj = { "id": id, "name": name, "text": value }
+            DATA[DATA.length] = obj
+
+        }
         return (
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     <User color="#000" />
-                    <TextInput placeholder="you are able to comment here" style={styleMsg.input} />
-                    <TouchableOpacity>
+                    <TextInput onChangeText={(text) => changeText(text)} placeholder="you are able to comment here" style={styleMsg.input}>
+                        {this.state.commentText}
+                    </TextInput>
+                    <TouchableOpacity onPress={() => addComment()}>
                         <Down color="#000" />
                     </TouchableOpacity>
                 </View>
                 <View>
-                    <View style={styleMsg.row}>
-                        <View style={styleMsg.headerText}>
-                            <Text style={styleMsg.userNameText}>Martin Luther JR.</Text>
-                            <Text style={styleMsg.time}>1 Minutes Ago</Text>
-                        </View>
-                        <View>
-                            <Text style={styleMsg.msg}>
-                                I have a dream that one day every valley shall be engulfed,
-                                every hill shall be exalted and every mountain shall be made low,
-                                the rough places will be made plains
-                        </Text>
-                        </View>
-                    </View>
-                    <View style={styleMsg.row}>
-                        <View style={styleMsg.headerText}>
-                            <Text style={styleMsg.userNameText}>Martin Luther JR.</Text>
-                            <Text style={styleMsg.time}>1 Minutes Ago</Text>
-                        </View>
-                        <View>
-                            <Text style={styleMsg.msg}>
-                                I have a dream that one day every valley shall be engulfed,
-                                every hill shall be exalted and every mountain shall be made low,
-                                the rough places will be made plains
-                        </Text>
-                        </View>
-                    </View>
-                    <View style={styleMsg.row}>
-                        <View style={styleMsg.headerText}>
-                            <Text style={styleMsg.userNameText}>Martin Luther JR.</Text>
-                            <Text style={styleMsg.time}>1 Minutes Ago</Text>
-                        </View>
-                        <View>
-                            <Text style={styleMsg.msg}>
-                                I have a dream that one day every valley shall be engulfed,
-                                every hill shall be exalted and every mountain shall be made low,
-                                the rough places will be made plains
-                        </Text>
-                        </View>
-                    </View>
+                    <FlatList
+                        data={DATA}
+                        extraData={DATA}
+                        renderItem={renderItem}
+                        keyExtractor={item => item.id}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={false}
+                                onRefresh={this.addComment}
+                            />
+                        }
+                    />
                 </View>
-            </View>
+
+            </View >
         )
     }
 }
@@ -69,7 +92,8 @@ const styleMsg = StyleSheet.create({
         borderTopLeftRadius: 0,
         textAlign: 'center',
         color: '#000',
-        width: '80%'
+        width: '80%',
+        height: 40
     },
     row: {
         width: '96%',
