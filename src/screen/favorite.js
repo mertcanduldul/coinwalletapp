@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 class Favorite extends React.Component {
     render() {
         const { navigation } = this.props
-        
+
         return (
             <View>
                 <FavoriteHeader />

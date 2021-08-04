@@ -5,12 +5,12 @@ import { Bitcoin, Aa, Ethereum, Dogecoin, Tether } from '../../component/icon/in
 
 export class TopCoins extends Component {
     render() {
-        const { title } = this.props
+        const { title, navigation, route } = this.props
         return (
             <View>
                 <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'space-between', marginHorizontal: 20 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 22 }}>{title}</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => { navigation.navigate(route) }}>
                         <Text style={{ fontSize: 20, color: '#4f63c6' }}>See All</Text>
                     </TouchableOpacity>
                 </View>

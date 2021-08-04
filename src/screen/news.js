@@ -8,13 +8,14 @@ import NewsList from './newsscreen/newsList'
 
 class News extends Component {
     render() {
+        const { navigation } = this.props
         return (
             <View style={{ flex: 1 }}>
                 <ScrollView keyboardShouldPersistTaps='always' keyboardShouldPersistTaps='handled'>
                     <SafeAreaView>
                         <NewsHeader />
-                        <TopCoins title="Top Coins" />
-                        <TopCoins title="Gainers & Losers" />
+                        <TopCoins title="Top Coins" navigation={this.props.navigation} route="Crypto Coin"/>
+                        <TopCoins title="Gainers & Losers" navigation={this.props.navigation} route="Emtia" />
                         <View style={{ flex: 1 }}>
                             <NewsList />
                         </View>

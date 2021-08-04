@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 import { Aa, Star } from '../../component/icon/index'
 import DATA from '../../db/DATA.json'
@@ -12,12 +13,26 @@ class CryptoCoin extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            arr: []
+            arr: [],
+            coinData: [],
         }
+    }
+    getData = async () => {
+        let uniqueCoin = {}
+        const response = await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1");
+        const res = await response.json();
+        const data = res?.data[1]
+        uniqueCoin.name = data?.name
+        uniqueCoin.price = data?.quote.USD.price
+        this.setState({ coinData: uniqueCoin })
+
+    }
+    componentWillMount() { //Deprecated Method
+        this.getData();
     }
     render() {
         const { navigation } = this.props
-        const { arr } = this.state
+        const { arr, coinData } = this.state
 
         const Item = ({ id, name, price, time, coinPercent, coinHoldingCount, coinHoldingPercent }) => (
             <View>
@@ -79,6 +94,7 @@ class CryptoCoin extends Component {
         );
         return (
             <View>
+                <Text>{coinData.name ? coinData.name : "no connection"}</Text>
                 <FlatList
                     data={DATA}
                     renderItem={renderItem}

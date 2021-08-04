@@ -56,8 +56,9 @@ function App() {
         }}
       >
         <Tab.Screen name="Market" component={Market} />
-        <Tab.Screen name="Favorite" component={Favorite} />
         <Tab.Screen name="News" component={News} />
+        
+        <Tab.Screen name="Favorite" component={Favorite} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
     </NavigationContainer>
