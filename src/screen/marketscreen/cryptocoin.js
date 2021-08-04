@@ -17,16 +17,22 @@ class CryptoCoin extends Component {
             coinData: [],
         }
     }
-    getData = async () => {
-        let uniqueCoin = {}
-        const response = await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1");
-        const res = await response.json();
-        const data = res?.data[1]
-        uniqueCoin.name = data?.name
-        uniqueCoin.price = data?.quote.USD.price
-        this.setState({ coinData: uniqueCoin })
 
+    getData = async () => {
+        let coinArr=[]
+        let uniqueCoin = {}
+        const response = await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1027");
+        const res = await response.json();
+        const data = res?.data[1027]
+        uniqueCoin.id = 0
+        uniqueCoin.name = data?.name
+        uniqueCoin.price = Math.round(data?.quote.USD.price)
+        uniqueCoin.percent = data?.quote.USD.percent_change_24h
+        coinArr[0]=uniqueCoin
+        this.setState({ coinData: coinArr })
+        
     }
+
     componentWillMount() { //Deprecated Method
         this.getData();
     }
@@ -94,9 +100,8 @@ class CryptoCoin extends Component {
         );
         return (
             <View>
-                <Text>{coinData.name ? coinData.name : "no connection"}</Text>
                 <FlatList
-                    data={DATA}
+                    data={coinData}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
