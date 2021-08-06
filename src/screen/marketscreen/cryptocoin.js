@@ -1,13 +1,12 @@
-import React, { Component } from 'react'
-import { Text, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 
 import { Aa, Star } from '../../component/icon/index'
 import DATA from '../../db/DATA.json'
+import axios from 'axios';
 
 //const RNFS = require('react-native-fs')
-
 
 class CryptoCoin extends Component {
     constructor(props) {
@@ -18,27 +17,59 @@ class CryptoCoin extends Component {
         }
     }
 
-    getData = async () => {
-        let coinArr=[]
+    getData = async () => { // CoinMarketCap
+        let coinArr = []
         let uniqueCoin = {}
-        const response = await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1027");
+        //wss://stream.coinmarketcap.com/price/latest
+        //https://api.coinmarketcap.com/data-api/v3/cryptocurrency/market-pairs/latest?slug=bitcoin&start=1&limit=6&category=spot&sort=cmc_rank_advanced
+        const response = await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1");
         const res = await response.json();
-        const data = res?.data[1027]
+        const data = res?.data[1]
+        //console.log(data)
         uniqueCoin.id = 0
         uniqueCoin.name = data?.name
         uniqueCoin.price = Math.round(data?.quote.USD.price)
         uniqueCoin.percent = data?.quote.USD.percent_change_24h
+        coinArr[0] = uniqueCoin
+        this.setState({ coinData: coinArr })
+    }
+    getCoinData = async () => { // CoinCap APİ 2.0
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+        let coinArr = []
+        let uniqueCoin = {}
+        const conn = await fetch("https://api.coincap.io/v2/assets/bitcoin", requestOptions);
+        const res= await conn.json();
+        const data=res?.data;
+        uniqueCoin.name=data.name
+        uniqueCoin.rank=1
+        uniqueCoin.price=Math.round(data.priceUsd)
         coinArr[0]=uniqueCoin
         this.setState({ coinData: coinArr })
-        
     }
 
-    componentWillMount() { //Deprecated Method
-        this.getData();
+    componentDidMount() { 
+        //this.getData();
+
+        // const pricesWs = new WebSocket('wss://ws.coincap.io/prices?assets=bitcoin')
+        // pricesWs.onmessage=(res)=>{
+        //     console.log(res.data)
+        // }
+        
+        this.getCoinData();
+
+
+
+
     }
     render() {
         const { navigation } = this.props
         const { arr, coinData } = this.state
+
+
+
 
         const Item = ({ id, name, price, time, coinPercent, coinHoldingCount, coinHoldingPercent }) => (
             <View>
