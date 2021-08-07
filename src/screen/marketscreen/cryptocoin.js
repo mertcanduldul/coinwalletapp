@@ -41,26 +41,48 @@ class CryptoCoin extends Component {
         let coinArr = []
         let uniqueCoin = {}
         const conn = await fetch("https://api.coincap.io/v2/assets/bitcoin", requestOptions);
-        const res= await conn.json();
-        const data=res?.data;
-        uniqueCoin.name=data.name
-        uniqueCoin.rank=1
-        uniqueCoin.price=Math.round(data.priceUsd)
-        coinArr[0]=uniqueCoin
+        const res = await conn.json();
+        const data = res?.data;
+        uniqueCoin.name = data.name
+        uniqueCoin.id = 1
+        uniqueCoin.price = data.priceUsd
+        coinArr[0] = uniqueCoin
         this.setState({ coinData: coinArr })
     }
+    getLiveData = async () => {
+        const tradeWs = await new WebSocket('wss://ws.coincap.io/prices?assets=bitcoin,dogecoin,ethereum,xrp')
+        tradeWs.onmessage = (res) => {
+            if (res.data !== null) {
+                const coinArr = ["bitcoin", "dogecoin", "ethereum", "xrp"]
+                const data = JSON.parse(res?.data)
+                const row = this.state.coinData
 
-    componentDidMount() { 
+                for (let i = 0; i < coinArr.length; i++) {
+                    const price = data[coinArr[i]]
+                    let uniqueCoin = {}
+                    uniqueCoin.name = coinArr[i].toUpperCase()
+                    uniqueCoin.id = i
+                    uniqueCoin.price = price
+                    row[i] = uniqueCoin
+                    let isAllDataFetchNumber = 0;
+                    row.forEach(element => {
+                        if (element.price !== undefined) {
+                            isAllDataFetchNumber++;
+                        }
+                        if (isAllDataFetchNumber === row.length) {
+                            this.setState({ coinData: row })    
+                        }
+                    });
+                }
+            }
+        }
+        isAllDataFetchNumber = 0;
+    }
+
+    componentDidMount() {
         //this.getData();
 
-        // const pricesWs = new WebSocket('wss://ws.coincap.io/prices?assets=bitcoin')
-        // pricesWs.onmessage=(res)=>{
-        //     console.log(res.data)
-        // }
-        
-        this.getCoinData();
-
-
+        this.getLiveData();
 
 
     }
@@ -90,7 +112,7 @@ class CryptoCoin extends Component {
                             <Text style={styles.coinTime}>{time}</Text>
                         </View>
                         <View style={{ width: 100 }}>
-                            <Aa width="100" color="red" />
+
                         </View>
                         <View style={styles.coinPriceBaloon}>
                             <Text style={styles.coinPrice}>{price} $</Text>
@@ -134,7 +156,7 @@ class CryptoCoin extends Component {
                 <FlatList
                     data={coinData}
                     renderItem={renderItem}
-                    keyExtractor={item => item.id}
+                    keyExtractor={(item, index) => item.id + index}
                 />
             </View>
         )
