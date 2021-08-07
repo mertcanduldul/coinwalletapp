@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import produce from "immer"
 
 import { Aa, Star } from '../../component/icon/index'
 import DATA from '../../db/DATA.json'
@@ -17,81 +18,57 @@ class CryptoCoin extends Component {
         }
     }
 
-    getData = async () => { // CoinMarketCap
-        let coinArr = []
-        let uniqueCoin = {}
-        //wss://stream.coinmarketcap.com/price/latest
-        //https://api.coinmarketcap.com/data-api/v3/cryptocurrency/market-pairs/latest?slug=bitcoin&start=1&limit=6&category=spot&sort=cmc_rank_advanced
-        const response = await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1");
-        const res = await response.json();
-        const data = res?.data[1]
-        //console.log(data)
-        uniqueCoin.id = 0
-        uniqueCoin.name = data?.name
-        uniqueCoin.price = Math.round(data?.quote.USD.price)
-        uniqueCoin.percent = data?.quote.USD.percent_change_24h
-        coinArr[0] = uniqueCoin
-        this.setState({ coinData: coinArr })
-    }
-    getCoinData = async () => { // CoinCap APİ 2.0
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-        let coinArr = []
-        let uniqueCoin = {}
-        const conn = await fetch("https://api.coincap.io/v2/assets/bitcoin", requestOptions);
-        const res = await conn.json();
-        const data = res?.data;
-        uniqueCoin.name = data.name
-        uniqueCoin.id = 1
-        uniqueCoin.price = data.priceUsd
-        coinArr[0] = uniqueCoin
-        this.setState({ coinData: coinArr })
-    }
-    getLiveData = async () => {
-        const tradeWs = await new WebSocket('wss://ws.coincap.io/prices?assets=bitcoin,dogecoin,ethereum,xrp')
-        tradeWs.onmessage = (res) => {
-            if (res.data !== null) {
-                const coinArr = ["bitcoin", "dogecoin", "ethereum", "xrp"]
-                const data = JSON.parse(res?.data)
-                const row = this.state.coinData
+    componentDidMount() {
+        const Live = () => {
 
-                for (let i = 0; i < coinArr.length; i++) {
-                    const price = data[coinArr[i]]
-                    let uniqueCoin = {}
-                    uniqueCoin.name = coinArr[i].toUpperCase()
-                    uniqueCoin.id = i
-                    uniqueCoin.price = price
-                    row[i] = uniqueCoin
-                    let isAllDataFetchNumber = 0;
-                    row.forEach(element => {
-                        if (element.price !== undefined) {
-                            isAllDataFetchNumber++;
-                        }
-                        if (isAllDataFetchNumber === row.length) {
-                            this.setState({ coinData: row })    
-                        }
-                    });
+            const requestCoinName = ["bitcoin", "dogecoin", "ethereum", "xrp","tron","monero","pancakeswap"]
+            const tradeWs = new WebSocket(`wss://ws.coincap.io/prices?assets=${requestCoinName.join(',')}`)
+
+            tradeWs.onmessage = (res) => {
+
+                if (res !== undefined || res !== null) {
+                    let data = JSON.parse(res?.data)
+                    let row = []
+
+                    for (let i = 0; i < requestCoinName.length; i++) {
+                        let uniqueCoin = {}
+                        uniqueCoin.name = requestCoinName[i]?.toUpperCase()
+                        uniqueCoin.id = data[requestCoinName[i]]
+                        const price = data[requestCoinName[i]]
+                        uniqueCoin.price = price
+                        let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                        uniqueCoin.time = datetime
+
+                        uniqueCoin.time = datetime
+                        row[i] = uniqueCoin
+                        var isAllDataFetchNumber = 0;
+                        row.forEach(element => {
+                            if (element.price !== undefined) {
+                                isAllDataFetchNumber++;
+                            }
+                            if (isAllDataFetchNumber === row.length) {
+                                this.setState(produce(state => {
+                                    for (let j = 0; j < row.length; j++) {
+                                        state.coinData[j] = row[j]
+
+                                    }
+                                }))
+
+                            }
+                        });
+
+                    }
                 }
+                isAllDataFetchNumber = 0;
             }
         }
-        isAllDataFetchNumber = 0;
-    }
-
-    componentDidMount() {
-        //this.getData();
-
-        this.getLiveData();
+        Live();
 
 
     }
     render() {
         const { navigation } = this.props
         const { arr, coinData } = this.state
-
-
-
 
         const Item = ({ id, name, price, time, coinPercent, coinHoldingCount, coinHoldingPercent }) => (
             <View>
@@ -156,7 +133,7 @@ class CryptoCoin extends Component {
                 <FlatList
                     data={coinData}
                     renderItem={renderItem}
-                    keyExtractor={(item, index) => item.id + index}
+                    keyExtractor={Item => Item.id}
                 />
             </View>
         )
