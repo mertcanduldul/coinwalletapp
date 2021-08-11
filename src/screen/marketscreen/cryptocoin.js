@@ -4,10 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import produce from "immer"
 
 import { Aa, Star } from '../../component/icon/index'
-import DATA from '../../db/DATA.json'
-import axios from 'axios';
-
-//const RNFS = require('react-native-fs')
 
 class CryptoCoin extends Component {
     constructor(props) {
@@ -15,58 +11,97 @@ class CryptoCoin extends Component {
         this.state = {
             arr: [],
             coinData: [],
+            list: [
+                "bitcoin", "dogecoin", "ethereum",
+                "xrp", "waves", "monero", "pancakeswap",
+                "stellar", "litecoin", "cardano", "tether",
+                "tron", "neo", "dash", "binance-coin", "tezos",
+            ],
         }
     }
-
-    componentDidMount() {
-        const Live = () => {
-
-            const requestCoinName = ["bitcoin", "dogecoin", "ethereum", "xrp","tron","monero","pancakeswap"]
-            const tradeWs = new WebSocket(`wss://ws.coincap.io/prices?assets=${requestCoinName.join(',')}`)
-
-            tradeWs.onmessage = (res) => {
-
-                if (res !== undefined || res !== null) {
-                    let data = JSON.parse(res?.data)
-                    let row = []
-
-                    for (let i = 0; i < requestCoinName.length; i++) {
-                        let uniqueCoin = {}
-                        uniqueCoin.name = requestCoinName[i]?.toUpperCase()
-                        uniqueCoin.id = data[requestCoinName[i]]
-                        const price = data[requestCoinName[i]]
-                        uniqueCoin.price = price
-                        let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
-                        uniqueCoin.time = datetime
-
-                        uniqueCoin.time = datetime
-                        row[i] = uniqueCoin
-                        var isAllDataFetchNumber = 0;
-                        row.forEach(element => {
-                            if (element.price !== undefined) {
-                                isAllDataFetchNumber++;
-                            }
-                            if (isAllDataFetchNumber === row.length) {
-                                this.setState(produce(state => {
-                                    for (let j = 0; j < row.length; j++) {
-                                        state.coinData[j] = row[j]
-
-                                    }
-                                }))
-
-                            }
-                        });
-
-                    }
-                }
-                isAllDataFetchNumber = 0;
-            }
+    coinInitiliazer = async () => {
+        let rows = []
+        let coinList = this.state.list
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+        for (let i = 0; i < coinList.length; i++) {
+            const element = coinList[i];
+            await fetch(`https://api.coincap.io/v2/assets/${element}`, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    let coin = {}
+                    const data = JSON.parse(result).data;
+                    coin.id = data.rank
+                    coin.name = data.name + " - " + data.symbol;
+                    let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                    coin.time = datetime
+                    coin.price = data.priceUsd
+                    rows.push(coin)
+                })
+                .catch(error => i--)
         }
-        Live();
+        this.setState({ coinData: rows })
 
+
+
+    }
+    fetchRealTimeData = () => {
+
+        const requestCoinName = this.state.list
+        const tradeWs = new WebSocket(`wss://ws.coincap.io/prices?assets=${requestCoinName.join(',')}`)
+
+        tradeWs.onmessage = (res) => {
+            if (res !== undefined || res !== null) {
+                let data = JSON.parse(res?.data)
+                let row = []
+
+                for (let i = 0; i < requestCoinName.length; i++) {
+                    let uniqueCoin = {}
+                    uniqueCoin.name = requestCoinName[i]?.toUpperCase()
+                    uniqueCoin.id = i
+
+                    const price = data[requestCoinName[i]]
+                    uniqueCoin.price = price
+                    let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                    uniqueCoin.time = datetime
+
+                    row[i] = uniqueCoin
+                    var isAllDataFetchNumber = 0;
+                    row.forEach(element => {
+                        if (element.price !== undefined) {
+                            isAllDataFetchNumber++;
+                        }
+                        if (isAllDataFetchNumber === row.length) {
+                            this.setState(produce(state => {
+                                for (let j = 0; j < row.length; j++) {
+                                    try {
+
+                                        state.coinData[j].price = row[j].price
+                                        state.coinData[j].time = row[j].time
+
+                                    } catch (error) {
+                                    }
+
+                                }
+                            }))
+
+                        }
+                    });
+
+                }
+            }
+            isAllDataFetchNumber = 0;
+        }
+    }
+    componentDidMount() {
+        this.coinInitiliazer();
+        this.fetchRealTimeData();
 
     }
     render() {
+
         const { navigation } = this.props
         const { arr, coinData } = this.state
 
@@ -108,6 +143,9 @@ class CryptoCoin extends Component {
                                 if (item !== null) {
                                     AsyncStorage.setItem(item.id + "", JSON.stringify(item)).catch((err) => console.log(err))
                                 }
+                                else {
+                                    console.log("hata");
+                                }
                             }
                             }>
                             <Star color="#ff9c00" />
@@ -130,6 +168,7 @@ class CryptoCoin extends Component {
         );
         return (
             <View>
+
                 <FlatList
                     data={coinData}
                     renderItem={renderItem}
@@ -152,7 +191,7 @@ const styles = StyleSheet.create({
 
     },
     coinHeader: {
-        width: 100,
+        width: 150,
         height: 37,
         marginTop: 22,
         fontSize: 16,
@@ -178,7 +217,7 @@ const styles = StyleSheet.create({
 
     },
     coinPriceBaloon: {
-        width: 81,
+        width: 110,
         height: 26,
         top: 0,
         borderRadius: 50,
