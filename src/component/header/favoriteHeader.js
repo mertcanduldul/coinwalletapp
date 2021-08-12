@@ -26,7 +26,7 @@ class FavoriteHeader extends Component {
                     let obj = JSON.parse(res)
                     tempPercent += parseFloat(obj.coinPercent.substring(1, 3))
                     tempPrice += parseFloat(obj.price)
-                    this.setState({ priceSum: tempPrice })
+                    this.setState({ priceSum: tempPrice.toFixed(2) })
                     this.setState({ pricePercent: tempPercent })
 
                 }
