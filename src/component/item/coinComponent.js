@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native'
 
 class CoinComponent extends Component {
     render() {
-        const { name, price, time, coinPercent, marketcoin, coinHoldingPercent, coinHoldingCount,...props } = this.props
+        const { name, price, time, coinPercent, marketcoin, coinHoldingPercent, coinHoldingCount, imgName, ...props } = this.props
         if (marketcoin) {
             return (
                 <View>
@@ -28,6 +28,11 @@ class CoinComponent extends Component {
                 <View>
                     <TouchableOpacity {...props}>
                         <View style={styles.coinRow}>
+                            <View>
+                                <Image style={{ width: 30, height: 30, left: 30 }} source={{
+                                    uri: `https://cryptologos.cc/logos/${name.replace(/\s+/g, '').toLowerCase()}-logo.png`
+                                }} />
+                            </View>
                             <View style={styles.coinLabelBox}>
                                 <Text style={styles.coinHeader}>{name}</Text>
                                 <Text style={styles.coinTime}>{time}</Text>
@@ -36,10 +41,7 @@ class CoinComponent extends Component {
                                 <Text style={styles.coinPrice}>{price} USD</Text>
                                 <Text style={styles.coinPercent}>{coinPercent}</Text>
                             </View>
-                            <View style={styles.coinHoldingsBox}>
-                                <Text style={styles.coinHoldingCount}>{coinHoldingCount}</Text>
-                                <Text style={styles.coinHoldingPercent}>{coinHoldingPercent}</Text>
-                            </View>
+
                         </View>
                     </TouchableOpacity>
                     <View style={styles.hr}></View>
@@ -84,7 +86,9 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 100,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center'
+
     },
     coinLabelBox: {
         marginLeft: 37,
