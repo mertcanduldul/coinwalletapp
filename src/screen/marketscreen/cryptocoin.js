@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, FlatList,Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import produce from "immer"
 
-import { Aa, Star } from '../../component/icon/index'
+import { Star } from '../../component/icon/index'
 
 class CryptoCoin extends Component {
     constructor(props) {
@@ -13,13 +13,14 @@ class CryptoCoin extends Component {
             coinData: [],
             list: [
                 "bitcoin", "dogecoin", "ethereum",
-                "xrp", "waves", "monero", "pancakeswap",
+                "nano", "waves", "monero", "pancakeswap",
                 "stellar", "litecoin", "cardano", "tether",
                 "tron", "neo", "dash", "binance-coin", "tezos",
             ],
         }
     }
     coinInitiliazer = async () => {
+
         let rows = []
         let coinList = this.state.list
         var requestOptions = {
@@ -37,12 +38,20 @@ class CryptoCoin extends Component {
                     coin.name = data.name + " - " + data.symbol;
                     let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
                     coin.time = datetime
-                    coin.price = data.priceUsd
+
+                    if (data.priceUsd <= 1) {
+                        coin.price = Number(data.priceUsd).toFixed(4)
+                    } else {
+                        coin.price = Number(data.priceUsd).toFixed(2)
+                    }
+
+                    coin.coinPercent = Number(data.changePercent24Hr).toFixed(2)
                     rows.push(coin)
                 })
                 .catch(error => i--)
         }
         this.setState({ coinData: rows })
+
 
 
 
@@ -101,7 +110,6 @@ class CryptoCoin extends Component {
 
     }
     render() {
-
         const { navigation } = this.props
         const { arr, coinData } = this.state
 
@@ -115,10 +123,15 @@ class CryptoCoin extends Component {
                         time,
                         coinPercent,
                         coinHoldingCount,
-                        coinHoldingPercent
+                        coinHoldingPercent,
                     },
                 )} >
                     <View style={styles.coinRow}>
+                        <View>
+                            <Image style={{ width: 30, height: 30, right: 10 }} source={{
+                                uri: `https://cryptologos.cc/logos/${name.replace(/\s+/g, '').toLowerCase()}-logo.png`
+                            }} />
+                        </View>
                         <View style={{ width: '15%' }}>
                             <Text style={styles.coinHeader}>{name}</Text>
                             <Text style={styles.coinTime}>{time}</Text>
@@ -126,10 +139,18 @@ class CryptoCoin extends Component {
                         <View style={{ width: 100 }}>
 
                         </View>
-                        <View style={styles.coinPriceBaloon}>
-                            <Text style={styles.coinPrice}>{price} $</Text>
-                            <Text style={styles.coinPercent}>{coinPercent}</Text>
-                        </View>
+                        {
+                            coinPercent < 0 ?
+                                <View style={styles.coinPriceBaloonRed}>
+                                    <Text style={styles.coinPriceWhite}>{price} $</Text>
+                                    <Text style={styles.coinPercent}>{coinPercent} % ▼</Text>
+                                </View>
+                                :
+                                <View style={styles.coinPriceBaloon}>
+                                    <Text style={styles.coinPrice}>{price} $</Text>
+                                    <Text style={styles.coinPercent}>{coinPercent} % ▲</Text>
+                                </View>
+                        }
                         <TouchableOpacity style={{ width: 25, alignItems: 'center' }}
                             onPress={() => {
                                 let item = {
@@ -138,7 +159,7 @@ class CryptoCoin extends Component {
                                     price: price,
                                     time: time,
                                     coinPercent: coinPercent,
-                                    marketcoin: false
+                                    marketcoin: false,
                                 }
                                 if (item !== null) {
                                     AsyncStorage.setItem(item.id + "", JSON.stringify(item)).catch((err) => console.log(err))
@@ -164,11 +185,12 @@ class CryptoCoin extends Component {
                 coinPercent={item.coinPercent}
                 coinHoldingCount={item.coinHoldingCount}
                 coinHoldingPercent={item.coinHoldingPercent}
+                symbol={item.symbol}
+                imgName={item.imgName}
             />
         );
         return (
             <View>
-
                 <FlatList
                     data={coinData}
                     renderItem={renderItem}
@@ -209,6 +231,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Raleway'
 
     },
+    coinPriceWhite: {
+        fontSize: 14,
+        marginTop: 3,
+        fontFamily: 'Raleway',
+        color:'#fff'
+
+    },
     coinPercent: {
         fontSize: 14,
         width: 100,
@@ -216,12 +245,21 @@ const styles = StyleSheet.create({
         left: 10
 
     },
+    
     coinPriceBaloon: {
         width: 110,
         height: 26,
         top: 0,
         borderRadius: 50,
         backgroundColor: '#2BFEBA',
+        alignItems: 'center',
+    },
+    coinPriceBaloonRed: {
+        width: 110,
+        height: 26,
+        top: 0,
+        borderRadius: 50,
+        backgroundColor: '#ff4d4d',
         alignItems: 'center',
     },
     hr: {
