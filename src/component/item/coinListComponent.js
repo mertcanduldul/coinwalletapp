@@ -98,12 +98,8 @@ class CoinList extends React.Component {
                             <Down color="#000" width="16" />
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                        <View style={styles.tableStockBox}>
-                            <Text>Stock</Text>
-                            <Down color="#000" width="16" />
-                        </View>
-                    </TouchableOpacity>
+
+
                 </View>
                 <View style={styles.coinRow}>
                     <FlatList
@@ -154,7 +150,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 40,
         backgroundColor: '#F0F0F0',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         alignItems: 'center',
         borderTopLeftRadius: 20
 
