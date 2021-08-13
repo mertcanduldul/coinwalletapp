@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, FlatList,Image } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import produce from "immer"
 
@@ -12,14 +12,14 @@ class CryptoCoin extends Component {
             arr: [],
             coinData: [],
             list: [
-                "bitcoin", "dogecoin", "ethereum",
+                "dogecoin", "ethereum",
                 "nano", "waves", "monero", "pancakeswap",
                 "stellar", "litecoin", "cardano", "tether",
-                "tron", "neo", "dash", "binance-coin", "tezos",
+                "tron", "neo", "dash", "binance-coin", "tezos", "bitcoin",
             ],
         }
     }
-    coinInitiliazer = async () => {
+    coinInitiliazer = async () => {//REST-API
 
         let rows = []
         let coinList = this.state.list
@@ -33,30 +33,29 @@ class CryptoCoin extends Component {
                 .then(response => response.text())
                 .then(result => {
                     let coin = {}
-                    const data = JSON.parse(result).data;
-                    coin.id = data.rank
-                    coin.name = data.name + " - " + data.symbol;
-                    let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
-                    coin.time = datetime
+                    let data = JSON.parse(result).data;
+                    if (data !== undefined) {
+                        coin.id = data.rank
+                        coin.name = data.name + " - " + data.symbol;
+                        let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                        coin.time = datetime
+                        coin.img = `https://cryptologos.cc/logos/${coin.name.replace(/\s+/g, '').toLowerCase()}-logo.png`
 
-                    if (data.priceUsd <= 1) {
-                        coin.price = Number(data.priceUsd).toFixed(4)
-                    } else {
-                        coin.price = Number(data.priceUsd).toFixed(2)
+                        if (data.priceUsd <= 1) {
+                            coin.price = Number(data.priceUsd).toFixed(4)
+                        } else {
+                            coin.price = Number(data.priceUsd).toFixed(2)
+                        }
+                        coin.coinPercent = Number(data.changePercent24Hr).toFixed(2)
+                        rows.push(coin)
                     }
 
-                    coin.coinPercent = Number(data.changePercent24Hr).toFixed(2)
-                    rows.push(coin)
                 })
-                .catch(error => i--)
+
         }
         this.setState({ coinData: rows })
-
-
-
-
     }
-    fetchRealTimeData = () => {
+    fetchRealTimeData = () => {//websocket
 
         const requestCoinName = this.state.list
         const tradeWs = new WebSocket(`wss://ws.coincap.io/prices?assets=${requestCoinName.join(',')}`)
@@ -104,16 +103,58 @@ class CryptoCoin extends Component {
             isAllDataFetchNumber = 0;
         }
     }
+    fetchData = () => {
+        setInterval(() => {
+            let rows = []
+            let coinList = this.state.list
+            const requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+            for (let i = 0; i < coinList.length; i++) {
+                const element = coinList[i];
+                fetch(`https://api.coincap.io/v2/assets/${element}`, requestOptions)
+                    .then(response => response.text())
+                    .then(result => {
+                        try {
+                            let data = JSON.parse(result).data
+                            if (data !== undefined && result !== undefined) {
+                                let price = Number(data.priceUsd).toFixed(4)
+                                let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                                let coinPercent = Number(data.changePercent24Hr).toFixed(4)
+                                if (price !== undefined) {
+                                    this.setState(produce(state => {
+                                        if (state !== undefined) {
+                                            try {
+                                                state.coinData[i].price = price
+                                                state.coinData[i].time = datetime
+                                                state.coinData[i].coinPercent = coinPercent
+                                            } catch (error) {
+                                                console.log(error);
+                                            }
+                                        }
+
+                                    }))
+                                }
+                            }
+                        } catch (error) {
+                            
+                            console.log(i + " : " + error);
+                        }
+                    })
+            }
+        }, 5000)
+    }
     componentDidMount() {
         this.coinInitiliazer();
-        this.fetchRealTimeData();
+        this.fetchData();
 
     }
     render() {
         const { navigation } = this.props
         const { arr, coinData } = this.state
 
-        const Item = ({ id, name, price, time, coinPercent, coinHoldingCount, coinHoldingPercent }) => (
+        const Item = ({ id, name, price, time, coinPercent, coinHoldingCount, coinHoldingPercent, img }) => (
             <View>
                 <TouchableOpacity onPress={() => navigation.navigate('Detail',
                     {
@@ -128,9 +169,7 @@ class CryptoCoin extends Component {
                 )} >
                     <View style={styles.coinRow}>
                         <View>
-                            <Image style={{ width: 30, height: 30, right: 10 }} source={{
-                                uri: `https://cryptologos.cc/logos/${name.replace(/\s+/g, '').toLowerCase()}-logo.png`
-                            }} />
+                            <Image style={{ width: 30, height: 30, right: 10 }} source={{ uri: img }} />
                         </View>
                         <View style={{ width: '15%' }}>
                             <Text style={styles.coinHeader}>{name}</Text>
@@ -141,15 +180,15 @@ class CryptoCoin extends Component {
                         </View>
                         {
                             coinPercent < 0 ?
-                                <View style={styles.coinPriceBaloonRed}>
+                                (<View style={styles.coinPriceBaloonRed}>
                                     <Text style={styles.coinPriceWhite}>{price} $</Text>
                                     <Text style={styles.coinPercent}>{coinPercent} % ▼</Text>
-                                </View>
+                                </View>)
                                 :
-                                <View style={styles.coinPriceBaloon}>
+                                (<View style={styles.coinPriceBaloon}>
                                     <Text style={styles.coinPrice}>{price} $</Text>
                                     <Text style={styles.coinPercent}>{coinPercent} % ▲</Text>
-                                </View>
+                                </View>)
                         }
                         <TouchableOpacity style={{ width: 25, alignItems: 'center' }}
                             onPress={() => {
@@ -185,8 +224,7 @@ class CryptoCoin extends Component {
                 coinPercent={item.coinPercent}
                 coinHoldingCount={item.coinHoldingCount}
                 coinHoldingPercent={item.coinHoldingPercent}
-                symbol={item.symbol}
-                imgName={item.imgName}
+                img={item.img}
             />
         );
         return (
@@ -235,7 +273,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 3,
         fontFamily: 'Raleway',
-        color:'#fff'
+        color: '#fff'
 
     },
     coinPercent: {
@@ -245,7 +283,7 @@ const styles = StyleSheet.create({
         left: 10
 
     },
-    
+
     coinPriceBaloon: {
         width: 110,
         height: 26,
