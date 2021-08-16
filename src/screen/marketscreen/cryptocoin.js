@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, FlatList, Image, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import produce from "immer"
 
@@ -12,48 +12,47 @@ class CryptoCoin extends Component {
             arr: [],
             coinData: [],
             list: [
-                "dogecoin", "ethereum",
+                "dogecoin", "ethereum", "bitcoin",
                 "nano", "waves", "monero", "pancakeswap",
                 "stellar", "litecoin", "cardano", "tether",
-                "tron", "neo", "dash", "binance-coin", "tezos", "bitcoin",
+                "tron", "neo", "dash", "binance-coin", "tezos",
             ],
+            isLoad: false
         }
     }
     coinInitiliazer = async () => {//REST-API
-
         let rows = []
         let coinList = this.state.list
         var requestOptions = {
             method: 'GET',
-            redirect: 'follow'
+            redirect: 'follow',
         };
         for (let i = 0; i < coinList.length; i++) {
             const element = coinList[i];
             await fetch(`https://api.coincap.io/v2/assets/${element}`, requestOptions)
-                .then(response => response.text())
-                .then(result => {
-                    let coin = {}
-                    let data = JSON.parse(result).data;
-                    if (data !== undefined) {
-                        coin.id = data.rank
-                        coin.name = data.name + " - " + data.symbol;
-                        let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
-                        coin.time = datetime
-                        coin.img = `https://cryptologos.cc/logos/${coin.name.replace(/\s+/g, '').toLowerCase()}-logo.png`
-
-                        if (data.priceUsd <= 1) {
-                            coin.price = Number(data.priceUsd).toFixed(4)
-                        } else {
-                            coin.price = Number(data.priceUsd).toFixed(2)
-                        }
-                        coin.coinPercent = Number(data.changePercent24Hr).toFixed(2)
-                        rows.push(coin)
-                    }
-
+                .then(response => {
+                    if (response.ok)
+                        return response.json()
                 })
+                .then(result => {
+                    result === undefined && i--
+                    let coin = {}
+                    let data = result?.data;
 
+                    coin.id = data.rank
+                    coin.name = data.name + " - " + data.symbol;
+                    coin.time = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                    coin.img = `https://cryptologos.cc/logos/${coin.name.replace(/\s+/g, '').toLowerCase()}-logo.png`
+                    data.priceUsd <= 1 ? coin.price = Number(data.priceUsd).toFixed(4) : coin.price = Number(data.priceUsd).toFixed(2)
+                    coin.coinPercent = Number(data.changePercent24Hr).toFixed(2)
+
+                    rows.push(coin)
+                })
+                .catch(err => new Error(err))
         }
         this.setState({ coinData: rows })
+        this.setState({ isLoad: true })
+        this.fetchData();
     }
     fetchRealTimeData = () => {//websocket
 
@@ -104,50 +103,45 @@ class CryptoCoin extends Component {
         }
     }
     fetchData = () => {
-        setInterval(() => {
+        setInterval(async () => {
             let rows = []
             let coinList = this.state.list
+            const _data = this.state.coinData
+
             const requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
             };
+
             for (let i = 0; i < coinList.length; i++) {
                 const element = coinList[i];
-                fetch(`https://api.coincap.io/v2/assets/${element}`, requestOptions)
-                    .then(response => response.text())
-                    .then(result => {
-                        try {
-                            let data = JSON.parse(result).data
-                            if (data !== undefined && result !== undefined) {
-                                let price = Number(data.priceUsd).toFixed(4)
-                                let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
-                                let coinPercent = Number(data.changePercent24Hr).toFixed(4)
-                                if (price !== undefined) {
-                                    this.setState(produce(state => {
-                                        if (state !== undefined) {
-                                            try {
-                                                state.coinData[i].price = price
-                                                state.coinData[i].time = datetime
-                                                state.coinData[i].coinPercent = coinPercent
-                                            } catch (error) {
-                                                console.log(error);
-                                            }
-                                        }
-
-                                    }))
-                                }
-                            }
-                        } catch (error) {
-                            
-                            console.log(i + " : " + error);
-                        }
+                await fetch(`https://api.coincap.io/v2/assets/${element}`, requestOptions)
+                    .then(response => {
+                        if (response.ok && response.status >= 200 && response.status < 300)
+                            return response.json()
                     })
+                    .then(result => {
+                        let data = result.data
+                        let price = Number(data.priceUsd).toFixed(4)
+                        let datetime = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+                        let coinPercent = Number(data.changePercent24Hr).toFixed(4)
+
+                        _data.forEach((item, index) => {
+                            this.setState(produce(draft => {
+                                if (index == i) {
+                                    draft.coinData[index].price = price
+                                    draft.coinData[index].time = datetime
+                                    draft.coinData[index].coinPercent = coinPercent
+                                }
+                            }))
+                        });
+                    })
+                    .catch(() => i < 0 ? i = 0 : i--)
             }
         }, 5000)
     }
     componentDidMount() {
         this.coinInitiliazer();
-        this.fetchData();
 
     }
     render() {
@@ -229,11 +223,21 @@ class CryptoCoin extends Component {
         );
         return (
             <View>
-                <FlatList
-                    data={coinData}
-                    renderItem={renderItem}
-                    keyExtractor={Item => Item.id}
-                />
+                {
+                    this.state.isLoad == true ? (
+                        <FlatList
+                            data={coinData}
+                            renderItem={renderItem}
+                            keyExtractor={Item => Item.id}
+                        />
+                    ) : (
+                        <View style={{ width: '100%', height: 100, paddingHorizontal: 20, position: 'absolute' }}>
+                            <View style={{ width: '20%', backgroundColor: '#a0a0a0', height: '60%', borderRadius: 100, justifyContent: 'center' }}><ActivityIndicator size="large" color="pink" /></View>
+                            <View style={{ width: '40%', backgroundColor: '#a0a0a0', height: '10%', left: '30%', bottom: '50%', borderRadius: 10 }}></View>
+                            <View style={{ width: '60%', backgroundColor: '#a0a0a0', height: '10%', left: '30%', bottom: '40%', borderRadius: 10 }}></View>
+                        </View>
+                    )
+                }
             </View>
         )
     }
