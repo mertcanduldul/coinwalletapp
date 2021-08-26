@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     greenBox: {
         width: 600,
         height: 150,
-        right:50,
+        right: 50,
         backgroundColor: '#0CF2B4',
         position: 'absolute',
         transform: [{ skewY: '210deg' }],
@@ -53,15 +53,15 @@ const styles = StyleSheet.create({
         bottom: 5,
         left: 20,
         width: 50,
-        height:50,
+        height: 50,
         justifyContent: 'center',
         alignItems: 'center'
     },
     headerCoinName: {
         fontFamily: 'Raleway',
         fontSize: 24,
-        width: 150,
-        height: 26,
+        width: '70%',
+        height: 30,
         left: 50,
     },
     gradientBox: {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     headerPercentMoney: {
         width: 140,
         height: 22,
-        left: 10,
+        left: 30,
         top: 25,
         color: "#fff",
 
