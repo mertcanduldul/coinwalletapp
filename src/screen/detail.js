@@ -11,13 +11,16 @@ class Detail extends Component {
     const { name, price, time, coinPercent, coinHoldingCount, coinHoldingPercent } = this.props.route.params
     return (
       <View>
-        <DetailHeader navigation={navigation} name={name} price={price}
+        <DetailHeader
+          navigation={navigation}
+          name={name}
+          price={price}
           coinPercent={coinPercent}
           coinHoldingCount={coinHoldingCount}
           coinHoldingPercent={coinHoldingPercent}
         />
-        <ChartComponent />
-        <DetailTabs />
+        <ChartComponent name={name} />
+        {/* <DetailTabs /> */}
       </View>
     )
   }
