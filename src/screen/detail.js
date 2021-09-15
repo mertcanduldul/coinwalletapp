@@ -19,7 +19,7 @@ class Detail extends Component {
           coinHoldingCount={coinHoldingCount}
           coinHoldingPercent={coinHoldingPercent}
         />
-        <ChartComponent name={name} />
+        <ChartComponent name={name} price={price} />
         {/* <DetailTabs /> */}
       </View>
     )

@@ -68,7 +68,8 @@ const styles = StyleSheet.create({
         marginTop: 46,
         marginLeft: 52,
         flexDirection: 'row',
-        justifyContent:'space-around'
+        justifyContent:'space-around',
+        top:10
 
     },
     headerBoxName: {

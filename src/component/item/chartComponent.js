@@ -73,7 +73,7 @@ class ChartComponent extends Component {
     }
 
     render() {
-        const { name } = this.props
+        const { name, price } = this.props
         const { chartData, isLoad } = this.state
         return (
             <View>
@@ -90,7 +90,7 @@ class ChartComponent extends Component {
                                     backgroundColor: "#000",
                                     backgroundGradientFrom: "#fff",
                                     backgroundGradientTo: "#fff",
-                                    decimalPlaces: 2, // optional, defaults to 2dp
+                                    decimalPlaces: price < 1 ? 3 : 1,
                                     color: (opacity = 1) => `rgba(228, 50, 193, ${opacity})`,
                                     labelColor: (opacity = 1) => `rgba(67, 64, 90, ${opacity})`,
                                     style: {

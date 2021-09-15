@@ -20,11 +20,11 @@ class FavoriteHeader extends Component {
     componentDidMount() {
         let tempPrice = 0
         let tempPercent = 0
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 100; i++) {
             AsyncStorage.getItem(i + "").then((res) => {
                 if (res !== null) {
                     let obj = JSON.parse(res)
-                    tempPercent += parseFloat(obj.coinPercent.substring(1, 3))
+                    tempPercent += parseFloat(obj.coinPercent.substring(0, 5))
                     tempPrice += parseFloat(obj.price)
                     this.setState({ priceSum: tempPrice.toFixed(2) })
                     this.setState({ pricePercent: tempPercent })
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     headerBox: {
-        top: 10,
+        top: 20,
         height: 188,
         width: '100%',
         alignItems: 'center',

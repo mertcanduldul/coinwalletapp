@@ -29,7 +29,7 @@ class CoinComponent extends Component {
                     <TouchableOpacity {...props}>
                         <View style={styles.coinRow}>
                             <View>
-                                <Image style={{ width: 30, height: 30, left: 30 }} source={{
+                                <Image style={{ width: 30, height: 30, left: 15 }} source={{
                                     uri: `https://cryptologos.cc/logos/${name.replace(/\s+/g, '').toLowerCase()}-logo.png`
                                 }} />
                             </View>
@@ -39,7 +39,7 @@ class CoinComponent extends Component {
                             </View>
                             <View style={styles.coinPriceMiddle}>
                                 <Text style={styles.coinPrice}>{price} USD</Text>
-                                <Text style={styles.coinPercent}>{coinPercent}</Text>
+                                <Text style={styles.coinPercent}>{coinPercent < 0 ? coinPercent + " %" : "+ " + coinPercent + " %"}</Text>
                             </View>
 
                         </View>
@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
 
     },
     coinLabelBox: {
-        marginLeft: 37,
+        marginLeft: 10,
     },
     coinHeader: {
-        width: 100,
+        width: 130,
         height: 37,
         marginTop: 22,
         fontSize: 16,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     },
     coinPercent: {
         fontSize: 14,
-        width: 100,
+        width: 50,
         height: 20,
         marginTop: 20,
         fontFamily: 'Raleway'
